@@ -2,7 +2,7 @@
 // Basically, this is the same as From. The main difference is that this should return a Result type
 // instead of the target type itself.
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
-use std::convert::{TryInto, TryFrom};
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug)]
 struct Color {
@@ -11,7 +11,7 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
+// I AM DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -22,10 +22,22 @@ struct Color {
 // but slice implementation need check slice length!
 // Also note, that chunk of correct rgb color must be integer in range 0..=255.
 
+fn inRange(a: &i16, b: &i16, c: &i16) -> bool {
+    let range = 0..255;
+    range.contains(a) && range.contains(b) && range.contains(c)
+}
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = String;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        match tuple {
+            (a, b, c) if inRange(&a, &b, &c) => Ok(Color {
+                red: a as u8,
+                green: b as u8,
+                blue: c as u8,
+            }),
+            _ => Err("".to_string()),
+        }
     }
 }
 
@@ -33,6 +45,14 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = String;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        match arr[..] {
+            [a, b, c] if inRange(&a, &b, &c) => Ok(Color {
+                red: a as u8,
+                green: b as u8,
+                blue: c as u8,
+            }),
+            _ => Err("".to_string()),
+        }
     }
 }
 
@@ -40,6 +60,14 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = String;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        match slice {
+            [a, b, c] if inRange(a, b, c) => Ok(Color {
+                red: *a as u8,
+                green: *b as u8,
+                blue: *c as u8,
+            }),
+            _ => Err("".to_string()),
+        }
     }
 }
 
